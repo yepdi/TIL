@@ -12,6 +12,13 @@ spring:
         #show_sql: true # jpa 실행 쿼리를 console에 출력
         format_sql: true # query formatting
 #        dialect: org.Hibernate.dialect.Oracle10gDialect # dialect에 따라 바꿔준다
+  data:
+    web:
+      pageable:
+        default-page-size: 10
+        max-page-size: 2000
+        one-indexed-parameters: true # page 를 1부터 사용한다 page = 0 page = 1 의 결과가 같다
+        # pageable 내의 데이터는 0부터 사용한다
 logging.level:
   org.hibernate.SQL: debug  # 로그 파일로 남길 수 있음
 #  org.hibernate.type: trace #parameter binding 까지 함께

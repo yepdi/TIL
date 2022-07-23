@@ -23,6 +23,7 @@ class MemberRepositoryTest(
     @Autowired @PersistenceContext private val em: EntityManager,
     @Autowired private val memberRepository: MemberRepository,
     @Autowired private val teamRepository: TeamRepository,
+    @Autowired private val memberQueryRepository: MemberQueryRepository
 ) {
 
     // org.springframework.data 공통 (spring-commons)
@@ -358,5 +359,33 @@ class MemberRepositoryTest(
         //        member member0_
         //    where
         //        member0_.username=? for update
+    }
+
+    @Test
+    fun callCustom() {
+        val results = memberRepository.findMemberCustom()
+
+    }
+
+    @Test
+
+    fun specBasic() {
+        // given
+        val teamA = Team("teamA")
+        em.persist(teamA)
+
+        val m1 = Member("m1", 0, teamA)
+        val m2 = Member("m2", 0, teamA)
+        em.persist(m1)
+        em.persist(m2)
+
+        em.flush()
+        em.clear()
+
+        // when
+        val spec = MemberSpec.userName("m1").and(MemberSpec.teamName("teamA"))
+        val result = memberRepository.findAll(spec)
+
+        println(result)
     }
 }

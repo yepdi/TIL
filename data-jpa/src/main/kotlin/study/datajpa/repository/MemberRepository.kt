@@ -11,7 +11,7 @@ import java.util.*
 import javax.persistence.LockModeType
 import javax.persistence.QueryHint
 
-interface MemberRepository : JpaRepository<Member, Long> {
+interface MemberRepository : JpaRepository<Member, Long>, MemberRepositoryCustom, JpaSpecificationExecutor<Member> {
 
     fun findByUsernameAndAgeGreaterThan(username: String, age: Int): List<Member>
     // method 이름으로 Query를 만든다

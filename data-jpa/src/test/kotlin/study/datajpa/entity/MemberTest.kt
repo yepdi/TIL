@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.annotation.Rollback
 import org.springframework.transaction.annotation.Transactional
+import study.datajpa.repository.MemberRepository
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 
@@ -12,7 +13,8 @@ import javax.persistence.PersistenceContext
 @Transactional
 @Rollback(false)
 internal class MemberTest(
-    @Autowired @PersistenceContext private val em: EntityManager
+    @Autowired @PersistenceContext private val em: EntityManager,
+    @Autowired private val memberRepository: MemberRepository
 ) {
     @Test
     fun testEntity() {
@@ -42,5 +44,25 @@ internal class MemberTest(
             println("member $it")
             println("-> member.team ${it.team}")
         }
+    }
+
+    @Test
+    fun JpaEventBaseEntity() {
+        // given
+        val member = Member("member1")
+        memberRepository.save(member)
+
+        Thread.sleep(100)
+        member.username = "member2"
+
+        em.flush() // @PreUpdate
+        em.clear()
+        // when
+
+        val findMember = memberRepository.findById(member.id!!).get()
+
+        // then
+//        println("findMember $findMember ${findMember.createdDate} ${findMember.updatedDate}")
+//        println("${findMember.modifiedBy} ${findMember.createdBy}")
     }
 }

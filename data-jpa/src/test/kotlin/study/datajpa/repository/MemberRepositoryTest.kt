@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.domain.Example
+import org.springframework.data.domain.ExampleMatcher
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.domain.Sort
@@ -387,5 +389,155 @@ class MemberRepositoryTest(
         val result = memberRepository.findAll(spec)
 
         println(result)
+    }
+
+    @Test
+    fun queryByExample() {
+        // 장점 : 동적 쿼리를 편리하게 처리. 도메인 객체를 그대로 사용. 데이터 저장소를 RDB -> NOSQL로 변경해도 코드 변경이 없이 추상화 되어 있음
+        // 스프링 데이터 JPA Repository 인터페이스에 이미 포함되어 있음
+        // 단점 : 조인은 가능하지만 inner join만 가능함 outer join은 되지 않음
+        // 중첩 제약조건 안됨, 매칭 조건이 매우 단순함 (starts, contains, ends, regex만)
+        // 정리 : 실무에서 사용하기에는 매칭 조건이 너무 단순하고 left 조인이 안됨 -> QueryDsl로 사용하자
+        // given
+        val teamA = Team("teamA")
+        em.persist(teamA)
+
+        val m1 = Member("m1", 0, teamA)
+        val m2 = Member("m2", 0, teamA)
+        em.persist(m1)
+        em.persist(m2)
+
+        em.flush()
+        em.clear()
+
+        // when
+        // Probe 실제 도메인 객체
+        val member = Member("m1")
+        val team = Team("teamA")
+        member.team = team
+//        select
+//        member0_.member_id as member_i1_1_,
+//        member0_.created_date as created_2_1_,
+//        member0_.updated_date as updated_3_1_,
+//        member0_.created_by as created_4_1_,
+//        member0_.modified_by as modified5_1_,
+//        member0_.age as age6_1_,
+//        member0_.team_id as team_id8_1_,
+//        member0_.username as username7_1_
+//        from
+//        member member0_
+//            inner join
+//            team team1_
+//            on member0_.team_id=team1_.team_id
+//            where
+//        member0_.username=?
+//        and team1_.name=?
+
+        // java 는 int age 가 primitive type이므로 (Kotlin에서는 null로 표현) 무시하도록 코드 추가
+        val matcher = ExampleMatcher.matching().withIgnorePaths("age")
+        val example = Example.of(member, matcher)
+        // inner join만 가능하고 outer join은 가능하지 않다
+
+        val result = memberRepository.findAll(example)
+        Assertions.assertThat(result.get(0).username).isEqualTo("m1")
+    }
+
+    // 프로젝션 대상이 root 엔티티면 JPQL SELECT 절 최적화 가능
+    // 프로젝션 대상이 root가 아니면 LEFT OUTER JOIN 처리, 모든 필드를 SELECT해서 엔티티로 조회한 다음에 계산
+    // 프로젝션 대상이 root entity면 유용. root entity를 넘어가면 JPQL SELECT 최적화가 안된다
+    @Test
+    fun projections() {
+        // given
+        val teamA = Team("teamA")
+        em.persist(teamA)
+
+        val m1 = Member("m1", 0, teamA)
+        val m2 = Member("m2", 0, teamA)
+        em.persist(m1)
+        em.persist(m2)
+
+        em.flush()
+        em.clear()
+
+        // when
+        val result = memberRepository.findProjectionsByUsername("m1")
+//        select
+//        member0_.username as col_0_0_
+//        from
+//        member member0_
+//            where
+//        member0_.username=?
+
+        result.forEach {
+            println("usernameOnly ${it.getUsername()}")
+        }
+    }
+
+    @Test
+    fun projectsUserDto() {
+        // given
+        val teamA = Team("teamA")
+        em.persist(teamA)
+
+        val m1 = Member("m1", 0, teamA)
+        val m2 = Member("m2", 0, teamA)
+        em.persist(m1)
+        em.persist(m2)
+
+        em.flush()
+        em.clear()
+
+        // when
+        val result = memberRepository.findProjectionsDtoByUsername("m1")
+
+        result.forEach {
+            println("usernameOnly ${it.username}")
+        }
+    }
+
+    @Test
+    fun projectsUserDtoNested() {
+        // given
+        val teamA = Team("teamA")
+        em.persist(teamA)
+
+        val m1 = Member("m1", 0, teamA)
+        val m2 = Member("m2", 0, teamA)
+        em.persist(m1)
+        em.persist(m2)
+
+        em.flush()
+        em.clear()
+
+        // when
+        val result: List<NestedClosedProjections> = memberRepository.findProjectionsNestedByUsername("m1")
+
+        result.forEach {
+            println("usernameOnly ${it}")
+        }
+    }
+
+    @Test
+    fun testNativeQuery() {
+        // given
+        val teamA = Team("teamA")
+        em.persist(teamA)
+
+        val m1 = Member("m1", 0, teamA)
+        val m2 = Member("m2", 0, teamA)
+        em.persist(m1)
+        em.persist(m2)
+
+        em.flush()
+        em.clear()
+
+        // when
+//        val member = memberRepository.findByNativeQuery("m1")
+        val result = memberRepository.findByNativeProjection(PageRequest.of(0, 10))
+        val content = result.content
+         content.forEach {
+             println(it.getUsername())
+             println(it.getTeamName())
+         }
     }
 }

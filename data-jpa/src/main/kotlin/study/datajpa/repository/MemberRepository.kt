@@ -89,4 +89,19 @@ interface MemberRepository : JpaRepository<Member, Long>, MemberRepositoryCustom
     // optimistic lock
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     fun findLockByUsername(name: String): List<Member>
+
+    fun findProjectionsByUsername(@Param("username") username: String): List<UserNameOnly>
+
+    fun findProjectionsDtoByUsername(@Param("username") username: String): List<UsernameOnlyDto>
+
+    fun findProjectionsNestedByUsername(@Param("username") username: String): List<NestedClosedProjections>
+
+    @Query(value = "select * from member where username = ?", nativeQuery = true)
+    fun findByNativeQuery(username: String): Member
+
+    @Query(value = "select m.member_id as id, m.username as username, t.name as teamName " +
+        "from member m left join team t",
+        countQuery = "select count(*) from member",
+        nativeQuery = true)
+    fun findByNativeProjection(pageable: Pageable): Page<MemberProjection>
 }

@@ -10,6 +10,8 @@ import core.studyspring.order.OrderServiceImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
+// factory method를 통해서 생성하는 방법
+
 @Configuration
 class AppConfig {
     // 애플리케이션의 실제 동작에 필요한 구현 객체를 생성한다

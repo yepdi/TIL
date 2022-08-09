@@ -19,4 +19,6 @@ class MemberServiceImpl : MemberService {
     override fun findMember(memberId: Long): Member? {
         return memberRepository.findById(memberId)
     }
+
+    public fun getMemberRepository() = memberRepository
 }

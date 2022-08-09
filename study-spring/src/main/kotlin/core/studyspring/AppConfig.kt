@@ -2,6 +2,7 @@ package core.studyspring
 
 import core.studyspring.discount.FixDiscountPolicy
 import core.studyspring.discount.RateDiscountPolicy
+import core.studyspring.member.MemberRepository
 import core.studyspring.member.MemberService
 import core.studyspring.member.MemberServiceImpl
 import core.studyspring.member.MemoryMemberRepository
@@ -19,14 +20,21 @@ class AppConfig {
     // 생성한 객체 인스턴스의 참조를 생성자를 통해서 주입해준다
     // 구성 영역은 변경될 수 밖에 없다
 
+    // @Bean memberService -> new MemoryMemberRepository()
+    // @Bean orderService -> new MemoryMemberRepository()
+
+    // @Configuration + @Autowired MemberRepository memberRepository 를 사용하면 주입해준다
+
     @Bean
     fun memberService(): MemberService {
         // 생성자 주입
+        println("call AppConfig.memberService")
         return MemberServiceImpl(memberRepository());
     }
 
     @Bean
     fun orderService(): OrderService {
+        println("call AppConfig.OrderService")
         return OrderServiceImpl(memberRepository(), discountPolicy());
     }
 
@@ -37,7 +45,10 @@ class AppConfig {
     fun discountPolicy() = RateDiscountPolicy()
 
     @Bean
-    fun memberRepository() = MemoryMemberRepository()
+    fun memberRepository(): MemberRepository {
+        println("call AppConfig.memberRepository")
+        return MemoryMemberRepository()
+    }
 
 
 }

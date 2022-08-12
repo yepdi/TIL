@@ -5,7 +5,10 @@ import core.studyspring.discount.FixDiscountPolicy
 import core.studyspring.discount.RateDiscountPolicy
 import core.studyspring.member.MemberRepository
 import core.studyspring.member.MemoryMemberRepository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 
+@Component
 class OrderServiceImpl: OrderService {
     private var memberRepository: MemberRepository
     // 할인 정책을 변경하려면 클라이언트인 OrderServiceImpl 코드를 고쳐야한다
@@ -15,6 +18,7 @@ class OrderServiceImpl: OrderService {
     private var discountPolicy: DiscountPolicy
     // 이렇게 하면 NPE 발생. OrderServiceImpl에 DiscountPolicy를 할당해줘야한다
 
+    @Autowired
     constructor(memberRepository: MemberRepository, discountPolicy: DiscountPolicy) {
         this.memberRepository = memberRepository
         this.discountPolicy = discountPolicy

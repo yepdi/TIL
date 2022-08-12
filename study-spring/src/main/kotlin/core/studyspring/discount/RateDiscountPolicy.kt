@@ -2,7 +2,9 @@ package core.studyspring.discount
 
 import core.studyspring.member.Grade
 import core.studyspring.member.Member
+import org.springframework.stereotype.Component
 
+@Component
 class RateDiscountPolicy: DiscountPolicy {
 
     private val discountPercent: Int = 10

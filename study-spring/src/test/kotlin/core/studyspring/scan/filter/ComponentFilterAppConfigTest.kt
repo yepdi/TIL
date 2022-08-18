@@ -24,7 +24,7 @@ class ComponentFilterAppConfigTest {
     }
 
     @Configuration
-    @ComponentScan(includeFilters = [ComponentScan.Filter(  classes = arrayOf(MyIncludeComponent::class))])
+    @ComponentScan(includeFilters = [ComponentScan.Filter(classes = arrayOf(MyIncludeComponent::class))])
     @ComponentScan(excludeFilters = [ComponentScan.Filter(type = FilterType.ANNOTATION, classes = arrayOf(MyExcludeComponent::class))])
     class ComponentFilterAppConfig {
         companion object {

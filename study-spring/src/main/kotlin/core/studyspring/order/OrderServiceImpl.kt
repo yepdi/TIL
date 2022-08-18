@@ -10,15 +10,31 @@ import org.springframework.stereotype.Component
 
 @Component
 class OrderServiceImpl: OrderService {
-    private var memberRepository: MemberRepository
+
+    private final var memberRepository: MemberRepository
     // 할인 정책을 변경하려면 클라이언트인 OrderServiceImpl 코드를 고쳐야한다
     // 구체(구현) 클래스에 의존하고 있다
     // DIP (구체 클래스가 아닌 추상 클래스에 의존하라) 위반, OCP 위반 (기능을 확장해서 변경하면 클라이언트 코드에 영항)
 //    private val discountPolicy = RateDiscountPolicy()
-    private var discountPolicy: DiscountPolicy
+    private final var discountPolicy: DiscountPolicy
     // 이렇게 하면 NPE 발생. OrderServiceImpl에 DiscountPolicy를 할당해줘야한다
 
-    @Autowired
+//    @Autowired
+//    fun setMemberRepository(memberRepository: MemberRepository) {
+//        this.memberRepository = memberRepository
+//    }
+//
+//    @Autowired
+//    fun setDiscountPolicy(discountPolicy: DiscountPolicy) {
+//        this.discountPolicy = discountPolicy
+//    }
+
+//    @Autowired
+//    fun init(memberRepository: MemberRepository, discountPolicy: DiscountPolicy) {
+//        this.memberRepository = memberRepository
+//        this.discountPolicy = discountPolicy
+//    }
+
     constructor(memberRepository: MemberRepository, discountPolicy: DiscountPolicy) {
         this.memberRepository = memberRepository
         this.discountPolicy = discountPolicy

@@ -28,4 +28,11 @@ class OrderServiceTest {
         val order = orderService.createOrder(memberId, "IteamA", 10000)
         Assertions.assertThat(order.discountPrice).isEqualTo(1000)
     }
+
+//    @Test
+//    fun fieldInjectionTest() {
+//        val orderService = OrderServiceImpl()
+//        orderService.createOrder(1L, "itemA", 10000)
+//    }
+
 }

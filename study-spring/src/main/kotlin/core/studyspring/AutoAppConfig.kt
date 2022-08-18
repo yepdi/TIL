@@ -1,6 +1,11 @@
 package core.studyspring
 
+import core.studyspring.discount.DiscountPolicy
+import core.studyspring.member.MemberRepository
 import core.studyspring.member.MemoryMemberRepository
+import core.studyspring.order.OrderService
+import core.studyspring.order.OrderServiceImpl
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
@@ -18,4 +23,13 @@ class AutoAppConfig {
 
 //    @Bean(name = ["memoryMemberRepository"])
 //    fun memberRepository() = MemoryMemberRepository()
+
+    // 필드 injection 사용 예시
+//    @Autowired lateinit var memberRepository: MemberRepository
+//    @Autowired lateinit var discountPolicy: DiscountPolicy
+//
+//    @Bean
+//    fun orderService(): OrderService {
+//        return OrderServiceImpl(memberRepository, discountPolicy)
+//    }
 }

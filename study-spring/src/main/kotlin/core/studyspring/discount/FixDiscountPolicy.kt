@@ -2,7 +2,10 @@ package core.studyspring.discount
 
 import core.studyspring.member.Grade
 import core.studyspring.member.Member
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.stereotype.Component
 
+@Component
 class FixDiscountPolicy: DiscountPolicy {
 
     private val discountFixAmount = 1000

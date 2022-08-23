@@ -1,11 +1,13 @@
 package core.studyspring.order
 
+import core.studyspring.annotation.MainDiscountPolicy
 import core.studyspring.discount.DiscountPolicy
 import core.studyspring.discount.FixDiscountPolicy
 import core.studyspring.discount.RateDiscountPolicy
 import core.studyspring.member.MemberRepository
 import core.studyspring.member.MemoryMemberRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 
 @Component
@@ -35,7 +37,8 @@ class OrderServiceImpl: OrderService {
 //        this.discountPolicy = discountPolicy
 //    }
 
-    constructor(memberRepository: MemberRepository, discountPolicy: DiscountPolicy) {
+    @Autowired
+    constructor(memberRepository: MemberRepository, @MainDiscountPolicy discountPolicy: DiscountPolicy) {
         this.memberRepository = memberRepository
         this.discountPolicy = discountPolicy
     }
